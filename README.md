@@ -1,6 +1,6 @@
 # Projeto Acolher • Gestão Social e Logística FEFO
 
-Sistema web de gestão socioassistencial e controle logístico de alimentos desenvolvido para a **AD Utinga (Santo André)** como projeto acadêmico do **Projeto Integrador II (UNIVESP)**.
+Sistema web de gestão socioassistencial e controle logístico de alimentos desenvolvido para a **ASCISA / AD Utinga (Santo André)** como projeto acadêmico do **Projeto Integrador II (UNIVESP)**.
 
 ## 🚀 Funcionalidades Principais
 - **Algoritmo FEFO (First Expired, First Out)**: Reordenação automática de lotes colocando itens com vencimento mais próximo no topo da fila de distribuição.

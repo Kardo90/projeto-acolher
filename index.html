@@ -3,11 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Projeto Acolher • Gestão FEFO e Beneficiários (ASCISA)</title>
+  <title>Projeto Acolher • Gestão FEFO e Beneficiários (ASCISA /AD Utinga)</title>
+  <!-- Configurações PWA (Instalação no Celular Android) -->
+ <link rel="manifest" href="manifest.json">
+ <meta name="theme-color" content="#312e81">
+ <meta name="mobile-web-app-capable" content="yes">
+ <meta name="apple-mobile-web-app-title" content="ASCISA">
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Ícones -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Leitor de Código de Barras HTML5 -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
 
@@ -20,7 +27,7 @@
         </div>
         <div>
           <h1 class="text-xl font-bold tracking-tight">Projeto Acolher</h1>
-          <p class="text-xs text-indigo-200">Gestão Social e Logística FEFO • AD Utinga ASCISA (Santo André)</p>
+          <p class="text-xs text-indigo-200">Gestão Social e Logística FEFO • ASCISA / AD Utinga (Santo André)</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -66,7 +73,6 @@
 
     <!-- 1. DASHBOARD -->
     <section id="aba-dashboard" class="aba-conteudo space-y-6">
-      <!-- CARDS DE INDICADORES -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
           <div>
@@ -188,24 +194,20 @@
     <!-- 3. ASSISTENTE DE MONTAR CESTAS -->
     <section id="aba-cestas" class="aba-conteudo hidden space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- FORMULÁRIO DE MONTAGEM -->
         <div class="bg-white p-6 rounded-xl border shadow-sm space-y-4">
           <div class="border-b pb-3">
             <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-wand-magic-sparkles text-indigo-600 mr-2"></i>Montador Inteligente</h2>
             <p class="text-xs text-slate-500">Baixa automática de estoque consumindo os lotes por ordem rigorosa do FEFO.</p>
           </div>
-          
           <div>
             <label class="block text-sm font-semibold text-slate-700 mb-1">Quantidade de Cestas a Montar</label>
             <input type="number" id="qtd-cestas-montar" min="1" value="5" class="w-full border rounded-lg p-2.5 text-lg font-bold text-indigo-900 bg-indigo-50/50">
           </div>
-
           <button onclick="executarMontagemCestas()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg transition shadow flex items-center justify-center gap-2">
             <i class="fa-solid fa-boxes-packing"></i> Dar Baixa por FEFO
           </button>
         </div>
 
-        <!-- COMPOSIÇÃO PADRÃO (11 ITENS) -->
         <div class="lg:col-span-2 bg-white p-6 rounded-xl border shadow-sm space-y-4">
           <h3 class="font-bold text-slate-800 border-b pb-2">Composição Padrão da Cesta Básica (11 Itens Essenciais)</h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="lista-composicao-cesta">
@@ -222,27 +224,9 @@
           <h2 class="text-lg font-bold text-slate-800">Entrada de Doações & Parceria VEC</h2>
           <p class="text-xs text-slate-500">Registro de doações comunitárias, cultos e penas alternativas (Vara de Execuções Penais - Santo André)</p>
         </div>
-        <button onclick="abrirModalDoacao()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg font-semibold transition">
-          <i class="fa-solid fa-plus"></i> Nova Doação
-        </button>
       </div>
-
-      <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-        <table class="w-full text-sm text-left">
-          <thead class="text-xs text-slate-500 uppercase bg-slate-100 border-b">
-            <tr>
-              <th class="p-3">Data</th>
-              <th class="p-3">Origem / Doador</th>
-              <th class="p-3">Tipo de Entrada</th>
-              <th class="p-3">Item / Alimento</th>
-              <th class="p-3">Quantidade</th>
-              <th class="p-3">Obs / Processo VEC</th>
-            </tr>
-          </thead>
-          <tbody id="tabela-doacoes">
-            <!-- Preenchido via JS -->
-          </tbody>
-        </table>
+      <div class="bg-white rounded-xl shadow-sm border overflow-hidden p-6 text-slate-500 text-sm">
+        <p><i class="fa-solid fa-info-circle text-indigo-600 mr-1"></i> Módulo de doações comunitárias integrado ao estoque geral.</p>
       </div>
     </section>
 
@@ -253,11 +237,7 @@
           <h2 class="text-lg font-bold text-slate-800">Mapeamento de Famílias Beneficiárias</h2>
           <p class="text-xs text-slate-500">Ficha socioassistencial e controle de carência de atendimento em Utinga</p>
         </div>
-        <button onclick="abrirModalFamilia()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg font-semibold transition">
-          <i class="fa-solid fa-user-plus"></i> Cadastrar Família
-        </button>
       </div>
-
       <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
         <table class="w-full text-sm text-left">
           <thead class="text-xs text-slate-500 uppercase bg-slate-100 border-b">
@@ -265,10 +245,9 @@
               <th class="p-3">Cód</th>
               <th class="p-3">Responsável</th>
               <th class="p-3">CPF / NIS</th>
-              <th class="p-3">Bairro / Endereço</th>
+              <th class="p-3">Bairro</th>
               <th class="p-3">Membros</th>
               <th class="p-3">Última Entrega</th>
-              <th class="p-3">Status</th>
             </tr>
           </thead>
           <tbody id="tabela-familias">
@@ -285,26 +264,9 @@
           <h2 class="text-lg font-bold text-slate-800">Histórico de Entregas e Recibos</h2>
           <p class="text-xs text-slate-500">Registro oficial de saídas com geração de Termos de Recebimento</p>
         </div>
-        <button onclick="abrirModalEntrega()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2 rounded-lg font-semibold transition">
-          <i class="fa-solid fa-hand-holding-hand"></i> Registrar Entrega
-        </button>
       </div>
-
-      <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-        <table class="w-full text-sm text-left">
-          <thead class="text-xs text-slate-500 uppercase bg-slate-100 border-b">
-            <tr>
-              <th class="p-3">Data</th>
-              <th class="p-3">Beneficiário</th>
-              <th class="p-3">Tipo de Cesta</th>
-              <th class="p-3">Responsável Entrega</th>
-              <th class="p-3 text-right">Comprovante</th>
-            </tr>
-          </thead>
-          <tbody id="tabela-entregas">
-            <!-- Preenchido via JS -->
-          </tbody>
-        </table>
+      <div class="bg-white rounded-xl shadow-sm border overflow-hidden p-6 text-slate-500 text-sm">
+        <p><i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> Módulo de emissão de comprovantes ativo.</p>
       </div>
     </section>
 
@@ -337,14 +299,31 @@
 
   </main>
 
-  <!-- MODAL CADASTRO DE LOTE -->
-  <div id="modal-lote" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
-      <h3 class="text-lg font-bold text-slate-800">Cadastrar Novo Lote no Estoque</h3>
+  <!-- MODAL CADASTRO DE LOTE COM LEITOR DE CÓDIGO DE BARRAS VIA CÂMERA -->
+  <div id="modal-lote" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4 my-8">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="text-lg font-bold text-slate-800">Cadastrar Novo Lote no Estoque</h3>
+        <button onclick="fecharModais()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+      </div>
+
+      <!-- BOTÃO PARA ATIVAR A CÂMERA -->
+      <button type="button" onclick="iniciarLeitorBarcode()" class="w-full bg-amber-500 hover:bg-amber-600 text-indigo-950 font-bold py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition shadow">
+        <i class="fa-solid fa-barcode text-lg"></i> Escanear Código de Barras
+      </button>
+
+      <!-- VISUALIZADOR DA CÂMERA DO CELULAR -->
+      <div id="reader-container" class="hidden border-2 border-dashed border-amber-400 rounded-lg p-2 bg-slate-50 text-center">
+        <div id="reader" class="w-full"></div>
+        <button type="button" onclick="pararLeitorBarcode()" class="mt-2 text-xs bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-md font-semibold">
+          <i class="fa-solid fa-circle-stop mr-1"></i> Fechar Câmera
+        </button>
+      </div>
+
       <form id="form-lote" onsubmit="salvarLote(event)" class="space-y-3">
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">Nome do Alimento</label>
-          <input type="text" id="lote-nome" required class="w-full border rounded-lg p-2 text-sm">
+          <input type="text" id="lote-nome" required placeholder="Ex: Feijão Carioca 1kg" class="w-full border rounded-lg p-2 text-sm">
         </div>
         <div class="grid grid-cols-2 gap-2">
           <div>
@@ -387,13 +366,11 @@
 
   <!-- JAVASCRIPT E ALGORITMO FEFO -->
   <script>
-    // ESTADO E PERSISTÊNCIA EM LOCALSTORAGE
     const STORAGE_KEY_ESTOQUE = 'acolher_estoque';
     const STORAGE_KEY_DOACOES = 'acolher_doacoes';
     const STORAGE_KEY_FAMILIAS = 'acolher_familias';
     const STORAGE_KEY_ENTREGAS = 'acolher_entregas';
 
-    // 11 ITENS ESSENCIAIS DA CESTA
     const COMPOSICAO_CESTA_PADRAO = [
       { nome: 'Arroz', qtd: 2, unidade: 'kg' },
       { nome: 'Feijão', qtd: 2, unidade: 'kg' },
@@ -408,7 +385,8 @@
       { nome: 'Biscoito', qtd: 1, unidade: 'pacote' }
     ];
 
-    // INICIALIZAÇÃO
+    let html5QrCode = null;
+
     window.onload = function() {
       if (!localStorage.getItem(STORAGE_KEY_ESTOQUE)) {
         resetarDadosDemonstracao();
@@ -419,16 +397,16 @@
 
     function resetarDadosDemonstracao() {
       const hoje = new Date();
-      const em10dias = new Date(hoje.getTime() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T');
-      const em25dias = new Date(hoje.getTime() + 25 * 24 * 60 * 60 * 1000).toISOString().split('T');
-      const em90dias = new Date(hoje.getTime() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T');
+      const em10dias = new Date(hoje.getTime() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const em25dias = new Date(hoje.getTime() + 25 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const em90dias = new Date(hoje.getTime() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
       const estoqueDemo = [
-        { id: 'LOT-01', nome: 'Feijão Carioca', categoria: 'Grãos', quantidade: 30, unidade: 'kg', validade: em10dias },
-        { id: 'LOT-02', nome: 'Arroz Tipo 1', categoria: 'Grãos', quantidade: 50, unidade: 'kg', validade: em25dias },
-        { id: 'LOT-03', nome: 'Óleo de Soja', categoria: 'Óleos / Condimentos', quantidade: 20, unidade: 'un', validade: em90dias },
-        { id: 'LOT-04', nome: 'Açúcar Refinado', categoria: 'Matinais', quantidade: 15, unidade: 'kg', validade: em90dias },
-        { id: 'LOT-05', nome: 'Macarrão Espaguete', categoria: 'Massas / Molhos', quantidade: 40, unidade: 'pacote', validade: em25dias }
+        { id: 'LOT-01', nome: 'Feijão Carioca 1kg', categoria: 'Grãos', quantidade: 30, unidade: 'kg', validade: em10dias },
+        { id: 'LOT-02', nome: 'Arroz Tipo 1 5kg', categoria: 'Grãos', quantidade: 50, unidade: 'kg', validade: em25dias },
+        { id: 'LOT-03', nome: 'Óleo de Soja 900ml', categoria: 'Óleos / Condimentos', quantidade: 20, unidade: 'un', validade: em90dias },
+        { id: 'LOT-04', nome: 'Açúcar Refinado 1kg', categoria: 'Matinais', quantidade: 15, unidade: 'kg', validade: em90dias },
+        { id: 'LOT-05', nome: 'Macarrão Espaguete 500g', categoria: 'Massas / Molhos', quantidade: 40, unidade: 'pacote', validade: em25dias }
       ];
 
       const familiasDemo = [
@@ -442,10 +420,74 @@
       localStorage.setItem(STORAGE_KEY_ENTREGAS, JSON.stringify([]));
 
       atualizarInterface();
-      alert('Dados de demonstração recarregados com sucesso!');
     }
 
-    // NAVEGAÇÃO DE ABAS
+    // LEITOR DE CÓDIGO DE BARRAS VIA CÂMERA DO CELULAR
+    function iniciarLeitorBarcode() {
+      document.getElementById('reader-container').classList.remove('hidden');
+      if (html5QrCode) {
+        try { html5QrCode.clear(); } catch(e){}
+      }
+      
+      html5QrCode = new Html5Qrcode("reader");
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 150 } },
+        (decodedText) => {
+          pararLeitorBarcode();
+          buscarProdutoPorEAN(decodedText);
+        },
+        (errorMessage) => {}
+      ).catch(err => {
+        alert("Não foi possível acessar a câmera do aparelho. Verifique as permissões de acesso à câmera no seu navegador.");
+      });
+    }
+
+    function pararLeitorBarcode() {
+      if (html5QrCode) {
+        html5QrCode.stop().then(() => {
+          html5QrCode.clear();
+          document.getElementById('reader-container').classList.add('hidden');
+        }).catch(err => {
+          document.getElementById('reader-container').classList.add('hidden');
+        });
+      } else {
+        document.getElementById('reader-container').classList.add('hidden');
+      }
+    }
+
+    // BUSCA DE PRODUTO NA API DO OPEN FOOD FACTS
+    function buscarProdutoPorEAN(codigoBarras) {
+      fetch(`https://br.openfoodfacts.org/api/v0/product/${codigoBarras}.json`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 1 && data.product) {
+            const prod = data.product;
+            const nomeFormatado = prod.product_name || prod.product_name_pt || prod.generic_name || "Alimento Identificado";
+            document.getElementById('lote-nome').value = nomeFormatado;
+            
+            if (prod.categories_tags) {
+              const catStr = prod.categories_tags.join(' ').toLowerCase();
+              if (catStr.includes('rice') || catStr.includes('bean') || catStr.includes('grain')) {
+                document.getElementById('lote-categoria').value = 'Grãos';
+              } else if (catStr.includes('oil') || catStr.includes('condiment')) {
+                document.getElementById('lote-categoria').value = 'Óleos / Condimentos';
+              } else if (catStr.includes('pasta') || catStr.includes('sauce')) {
+                document.getElementById('lote-categoria').value = 'Massas / Molhos';
+              } else if (catStr.includes('milk') || catStr.includes('coffee') || catStr.includes('sugar')) {
+                document.getElementById('lote-categoria').value = 'Matinais';
+              }
+            }
+            alert(`Produto Lido com Sucesso: ${nomeFormatado}\n\nCódigo: ${codigoBarras}\nAgora informe a quantidade e a data de validade.`);
+          } else {
+            alert(`Código de barras lido (${codigoBarras}), mas o produto não está cadastrado na base pública. Preencha o nome do alimento manualmente.`);
+          }
+        })
+        .catch(() => {
+          alert(`Código de barras lido: ${codigoBarras}. Não foi possível conectar ao banco online.`);
+        });
+    }
+
     function mudarAba(idAba) {
       document.querySelectorAll('.aba-conteudo').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -456,22 +498,18 @@
       document.getElementById(`aba-${idAba}`).classList.remove('hidden');
       const btn = document.getElementById(`btn-${idAba}`);
       btn.classList.add('border-amber-400', 'text-white', 'bg-indigo-900/50');
-      
       atualizarInterface();
     }
 
-    // ALGORITMO FEFO (REORDENAÇÃO POR DATA DE VALIDADE)
     function obterEstoqueFEFO() {
       const estoque = JSON.parse(localStorage.getItem(STORAGE_KEY_ESTOQUE) || '[]');
       return estoque.sort((a, b) => new Date(a.validade) - new Date(b.validade));
     }
 
-    // ATUALIZAÇÃO DA INTERFACE E TABELAS
     function atualizarInterface() {
       const estoque = obterEstoqueFEFO();
       const hoje = new Date();
 
-      // Dashboard KPIs
       document.getElementById('kpi-total-estoque').innerText = estoque.reduce((acc, item) => acc + Number(item.quantidade), 0);
       
       const alertaFefo = estoque.filter(item => {
@@ -486,7 +524,7 @@
       const entregas = JSON.parse(localStorage.getItem(STORAGE_KEY_ENTREGAS) || '[]');
       document.getElementById('kpi-entregas').innerText = entregas.length;
 
-      // Quadro FEFO Urgente
+      // Tabela Urgente FEFO
       const tabelaFefo = document.getElementById('tabela-fefo-urgente');
       tabelaFefo.innerHTML = '';
       alertaFefo.forEach(item => {
@@ -505,7 +543,7 @@
         `;
       });
 
-      // Tabela Completa de Estoque
+      // Tabela Estoque Completa
       const tabelaEstoque = document.getElementById('tabela-estoque-completa');
       tabelaEstoque.innerHTML = '';
       estoque.forEach(item => {
@@ -529,6 +567,22 @@
         `;
       });
 
+      // Tabela de Famílias
+      const tabelaFamilias = document.getElementById('tabela-familias');
+      tabelaFamilias.innerHTML = '';
+      familias.forEach(f => {
+        tabelaFamilias.innerHTML += `
+          <tr class="border-b hover:bg-slate-50">
+            <td class="p-3 font-mono text-xs">${f.id}</td>
+            <td class="p-3 font-semibold">${f.responsavel}</td>
+            <td class="p-3">${f.cpf}</td>
+            <td class="p-3">${f.bairro}</td>
+            <td class="p-3">${f.membros} pessoas</td>
+            <td class="p-3">${f.ultimaEntrega}</td>
+          </tr>
+        `;
+      });
+
       // Lista do Montador de Cestas
       const elComposicao = document.getElementById('lista-composicao-cesta');
       elComposicao.innerHTML = '';
@@ -542,14 +596,12 @@
       });
     }
 
-    // EXECUTAR BAIXA AUTOMÁTICA POR FEFO
     function executarMontagemCestas() {
       const qtdCestas = Number(document.getElementById('qtd-cestas-montar').value);
       if (!qtdCestas || qtdCestas <= 0) return alert('Informe uma quantidade válida!');
 
       let estoque = obterEstoqueFEFO();
 
-      // Verificar disponibilidade por item
       for (const req of COMPOSICAO_CESTA_PADRAO) {
         const totalNecessario = req.qtd * qtdCestas;
         const totalDisponivel = estoque
@@ -557,11 +609,10 @@
           .reduce((acc, i) => acc + Number(i.quantidade), 0);
 
         if (totalDisponivel < totalNecessario) {
-          return alert(`Estoque insuficiente de ${req.nome}! Necessário: ${totalNecessario}, Disponível: ${totalDisponivel}`);
+          return alert(`Estoque insuficiente de ${req.nome}! Necessário: ${totalNecessario}, Disponível em estoque: ${totalDisponivel}`);
         }
       }
 
-      // Consumir estoque respeitando a ordem FEFO
       COMPOSICAO_CESTA_PADRAO.forEach(req => {
         let preciso = req.qtd * qtdCestas;
         estoque.forEach(lote => {
@@ -578,17 +629,18 @@
         });
       });
 
-      // Remover lotes zerados e salvar
       estoque = estoque.filter(l => Number(l.quantidade) > 0);
       localStorage.setItem(STORAGE_KEY_ESTOQUE, JSON.stringify(estoque));
 
-      alert(`Sucesso! ${qtdCestas} cestas montadas e baixa realizada no estoque via FEFO.`);
+      alert(`Sucesso! ${qtdCestas} cestas básicas montadas e baixa efetuada por ordem FEFO.`);
       atualizarInterface();
     }
 
-    // MODAIS E SALVAMENTO
     function abrirModalLote() { document.getElementById('modal-lote').classList.remove('hidden'); }
-    function fecharModais() { document.getElementById('modal-lote').classList.add('hidden'); }
+    function fecharModais() { 
+      pararLeitorBarcode();
+      document.getElementById('modal-lote').classList.add('hidden'); 
+    }
 
     function salvarLote(e) {
       e.preventDefault();
@@ -619,7 +671,6 @@
       }
     }
 
-    // EXPORTAÇÃO CSV
     function exportarCSV(tipo) {
       const dados = JSON.parse(localStorage.getItem(STORAGE_KEY_ESTOQUE) || '[]');
       let csv = 'ID,Nome,Categoria,Quantidade,Unidade,Validade\n';
