@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Projeto Acolher • Gestão FEFO e Beneficiários (ASCISA /AD Utinga)</title>
-  <!-- Configurações PWA (Instalação no Celular Android) -->
- <link rel="manifest" href="manifest.json">
- <meta name="theme-color" content="#312e81">
- <meta name="mobile-web-app-capable" content="yes">
- <meta name="apple-mobile-web-app-title" content="ASCISA">
+  <title>Projeto Acolher • Gestão FEFO e Beneficiários (ASCISA / AD Utinga)</title>
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Ícones -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Leitor de Código de Barras HTML5 -->
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <!-- Configurações PWA (Instalação no Celular Android) -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#312e81">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="ASCISA">
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
 
@@ -98,7 +98,7 @@
           <div>
             <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Famílias Ativas</p>
             <h3 id="kpi-familias" class="text-2xl font-bold text-indigo-600 mt-1">0</h3>
-            <span class="text-xs text-slate-500">Cadastradas no bairro</span>
+            <span class="text-xs text-slate-500">Cadastradas na ASCISA</span>
           </div>
           <div class="bg-indigo-100 text-indigo-600 p-3.5 rounded-xl">
             <i class="fa-solid fa-house-chimney-user text-xl"></i>
@@ -226,7 +226,7 @@
         </div>
       </div>
       <div class="bg-white rounded-xl shadow-sm border overflow-hidden p-6 text-slate-500 text-sm">
-        <p><i class="fa-solid fa-info-circle text-indigo-600 mr-1"></i> Módulo de doações comunitárias integrado ao estoque geral.</p>
+        <p><i class="fa-solid fa-info-circle text-indigo-600 mr-1"></i> Módulo de doações da ASCISA integrado ao estoque geral.</p>
       </div>
     </section>
 
@@ -235,7 +235,7 @@
       <div class="flex justify-between items-center bg-white p-4 rounded-xl border shadow-sm">
         <div>
           <h2 class="text-lg font-bold text-slate-800">Mapeamento de Famílias Beneficiárias</h2>
-          <p class="text-xs text-slate-500">Ficha socioassistencial e controle de carência de atendimento em Utinga</p>
+          <p class="text-xs text-slate-500">Ficha socioassistencial e controle de carência de atendimento na ASCISA / Utinga</p>
         </div>
       </div>
       <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
@@ -299,12 +299,12 @@
 
   </main>
 
-  <!-- MODAL CADASTRO DE LOTE COM LEITOR DE CÓDIGO DE BARRAS VIA CÂMERA -->
+  <!-- MODAL CADASTRO DE LOTE -->
   <div id="modal-lote" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 overflow-y-auto">
     <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4 my-8">
       <div class="flex justify-between items-center border-b pb-2">
         <h3 class="text-lg font-bold text-slate-800">Cadastrar Novo Lote no Estoque</h3>
-        <button onclick="fecharModais()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+        <button type="button" onclick="fecharModais(true)" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
       </div>
 
       <!-- BOTÃO PARA ATIVAR A CÂMERA -->
@@ -357,7 +357,7 @@
           </div>
         </div>
         <div class="flex justify-end gap-2 pt-3">
-          <button type="button" onclick="fecharModais()" class="px-4 py-2 text-xs font-semibold bg-slate-200 rounded-lg">Cancelar</button>
+          <button type="button" onclick="fecharModais(true)" class="px-4 py-2 text-xs font-semibold bg-slate-200 rounded-lg">Cancelar</button>
           <button type="submit" class="px-4 py-2 text-xs font-semibold bg-indigo-600 text-white rounded-lg">Salvar Lote</button>
         </div>
       </form>
@@ -386,6 +386,14 @@
     ];
 
     let html5QrCode = null;
+
+    // EVENTO DE BOTÃO VOLTAR DO ANDROID (Evita fechar o aplicativo ao fechar o modal)
+    window.onpopstate = function(event) {
+      const modalLote = document.getElementById('modal-lote');
+      if (modalLote && !modalLote.classList.contains('hidden')) {
+        fecharModais(false);
+      }
+    };
 
     window.onload = function() {
       if (!localStorage.getItem(STORAGE_KEY_ESTOQUE)) {
@@ -422,7 +430,21 @@
       atualizarInterface();
     }
 
-    // LEITOR DE CÓDIGO DE BARRAS VIA CÂMERA DO CELULAR
+    function abrirModalLote() {
+      document.getElementById('modal-lote').classList.remove('hidden');
+      history.pushState({ modalAberto: true }, "");
+    }
+
+    function fecharModais(navegarHistorico = true) {
+      pararLeitorBarcode();
+      document.getElementById('modal-lote').classList.add('hidden');
+      
+      if (navegarHistorico && history.state && history.state.modalAberto) {
+        history.back();
+      }
+    }
+
+    // INICIAR LEITOR DE CÓDIGO DE BARRAS VIA CÂMERA
     function iniciarLeitorBarcode() {
       document.getElementById('reader-container').classList.remove('hidden');
       if (html5QrCode) {
@@ -439,18 +461,23 @@
         },
         (errorMessage) => {}
       ).catch(err => {
-        alert("Não foi possível acessar a câmera do aparelho. Verifique as permissões de acesso à câmera no seu navegador.");
+        alert("Não foi possível acessar a câmera do aparelho. Verifique as permissões de acesso no seu navegador.");
       });
     }
 
+    // DESLIGAR CÂMERA DE FORMA SEGURA
     function pararLeitorBarcode() {
       if (html5QrCode) {
-        html5QrCode.stop().then(() => {
-          html5QrCode.clear();
+        try {
+          html5QrCode.stop().then(() => {
+            html5QrCode.clear();
+            document.getElementById('reader-container').classList.add('hidden');
+          }).catch(() => {
+            document.getElementById('reader-container').classList.add('hidden');
+          });
+        } catch(e) {
           document.getElementById('reader-container').classList.add('hidden');
-        }).catch(err => {
-          document.getElementById('reader-container').classList.add('hidden');
-        });
+        }
       } else {
         document.getElementById('reader-container').classList.add('hidden');
       }
@@ -480,7 +507,7 @@
             }
             alert(`Produto Lido com Sucesso: ${nomeFormatado}\n\nCódigo: ${codigoBarras}\nAgora informe a quantidade e a data de validade.`);
           } else {
-            alert(`Código de barras lido (${codigoBarras}), mas o produto não está cadastrado na base pública. Preencha o nome do alimento manualmente.`);
+            alert(`Código de barras lido (${codigoBarras}), mas o produto não consta no catálogo online. Preencha o nome do alimento manualmente.`);
           }
         })
         .catch(() => {
@@ -636,14 +663,12 @@
       atualizarInterface();
     }
 
-    function abrirModalLote() { document.getElementById('modal-lote').classList.remove('hidden'); }
-    function fecharModais() { 
-      pararLeitorBarcode();
-      document.getElementById('modal-lote').classList.add('hidden'); 
-    }
-
     function salvarLote(e) {
       e.preventDefault();
+      
+      // Garante o desligamento da câmera antes de atualizar o estado
+      pararLeitorBarcode();
+
       const novoLote = {
         id: 'LOT-' + Math.floor(Math.random() * 1000),
         nome: document.getElementById('lote-nome').value,
@@ -657,8 +682,8 @@
       estoque.push(novoLote);
       localStorage.setItem(STORAGE_KEY_ESTOQUE, JSON.stringify(estoque));
 
-      fecharModais();
       document.getElementById('form-lote').reset();
+      fecharModais(true);
       atualizarInterface();
     }
 
